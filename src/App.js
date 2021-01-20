@@ -8,7 +8,7 @@ const App = () => {
     const [socket] = useState(new Socket());
     const [socketOpen, setSocketOpen] = useState(false);
 
-    const url = 'wss://ws.finnhub.io?token=c035nmn48v6v2t3i3n00';
+    const url = 'wss://ws.finnhub.io?token=<TOKEN GOES HERE>';
 
     const onSocketMessageReceived = (data) => {
         console.log(data);
