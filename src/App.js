@@ -8,10 +8,19 @@ const App = () => {
     const [socket] = useState(new Socket());
     const [socketOpen, setSocketOpen] = useState(false);
 
-    const url = 'wss://ws.finnhub.io?token=<TOKEN GOES HERE>';
+    const url = 'wss://ws.finnhub.io?token=' + process.env.REACT_APP_API_KEY;
 
     const onSocketMessageReceived = (data) => {
         console.log(data);
+    }
+
+    const onSocketClosed = () => setSocketOpen(false);
+
+    const onSocketOpened = () => {
+        Array.from(tickerPriceMap.keys()).forEach((symbol) => {
+            socket.subscribe(symbol);
+        });
+        setSocketOpen(true);
     }
 
     const unsubscribe = (symbol) => {
@@ -21,23 +30,13 @@ const App = () => {
         socket.unsubscribe(symbol);
     }
 
-    const connectSocket = () => {
-        socket.connect(url, Array.from(tickerPriceMap.keys()), onSocketMessageReceived);
-        setSocketOpen(socket.isOpen());
-    }
-
-    const disconnectSocket = () => {
-        socket.disconnect();
-        setSocketOpen(socket.isOpen());
-    }
-
     return (
         <div>
             <UnsubscribeSelector unsubscribe={(symbol) => unsubscribe(symbol)}
                                  symbols={Array.from(tickerPriceMap.keys())}
             />
-            <ConnectDisconnect connect={() => connectSocket()}
-                               disconnect={() => disconnectSocket()}
+            <ConnectDisconnect connect={() => socket.connect(url, onSocketOpened, onSocketMessageReceived, onSocketClosed)}
+                               disconnect={() => socket.disconnect()}
                                socketOpen={socketOpen}
             />
         </div>

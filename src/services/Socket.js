@@ -4,49 +4,42 @@ class Socket {
         this.socket = null;
     }
 
-    setupSocketListeners(defaultSymbols, onMessageReceived) {
+    setupSocketListeners(onSocketOpen, onMessageReceived, onSocketClose) {
         const specialThis = this; //just javascript things
 
         // Connection opened -> Subscribe
         this.socket.addEventListener('open', function (event) {
-            defaultSymbols.forEach((symbol) => {
-                specialThis.subscribe(symbol);
-            })
+            onSocketOpen();
         });
 
         // Listen for messages
         this.socket.addEventListener('message', function (event) {
             onMessageReceived(event.data);
         });
+
+        //Listen for socket close
+        this.socket.addEventListener('close', () => onSocketClose());
     }
 
     //connect
-    connect(url, defaultSymbols, onMessageReceived) {
+    connect(url, onSocketOpen, onMessageReceived, onSocketClose) {
         this.socket = new WebSocket(url);
-        this.setupSocketListeners(defaultSymbols, onMessageReceived);
+        this.setupSocketListeners(onSocketOpen, onMessageReceived, onSocketClose);
     }
 
-//Subscribe
+    //Subscribe
     subscribe(symbol) {
         this.socket.send(JSON.stringify({'type': 'subscribe', 'symbol': symbol}));
     }
 
-// Unsubscribe
+    // Unsubscribe
     unsubscribe(symbol) {
         this.socket.send(JSON.stringify({'type': 'unsubscribe', 'symbol': symbol}));
     }
 
-//disconnect
+    //disconnect
     disconnect() {
         this.socket.close();
-    }
-
-    isOpen() {
-        if (this && this.socket != null) {
-            return this.socket.OPEN > 0;
-        } else {
-            return false;
-        }
     }
 }
 
