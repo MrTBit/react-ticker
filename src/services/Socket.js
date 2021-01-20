@@ -1,10 +1,7 @@
-import React from 'react';
-
 class Socket {
 
-    constructor(url,defaultSymbols,  onMessageReceived) {
-        this.socket = new WebSocket(url);
-        this.setupSocketListeners(defaultSymbols, onMessageReceived);
+    constructor() {
+        this.socket = null;
     }
 
     setupSocketListeners(defaultSymbols, onMessageReceived) {
@@ -21,8 +18,12 @@ class Socket {
         this.socket.addEventListener('message', function (event) {
             onMessageReceived(event.data);
         });
+    }
 
-        return defaultSymbols; //temporary
+    //connect
+    connect(url, defaultSymbols, onMessageReceived) {
+        this.socket = new WebSocket(url);
+        this.setupSocketListeners(defaultSymbols, onMessageReceived);
     }
 
 //Subscribe
@@ -35,9 +36,17 @@ class Socket {
         this.socket.send(JSON.stringify({'type': 'unsubscribe', 'symbol': symbol}));
     }
 
-//disconnect (no idea if this works)
+//disconnect
     disconnect() {
         this.socket.close();
+    }
+
+    isOpen() {
+        if (this && this.socket != null) {
+            return this.socket.OPEN > 0;
+        } else {
+            return false;
+        }
     }
 }
 

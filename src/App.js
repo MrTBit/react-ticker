@@ -1,13 +1,14 @@
-import {useState, useEffect} from "react";
-import Socket from "./components/Socket";
+import {useState} from "react";
+import Socket from "./services/Socket";
+import UnsubscribeSelector from "./components/UnsubscribeSelector";
+import ConnectDisconnect from "./components/ConnectDisconnect";
 
 const App = () => {
     const [tickerPriceMap, setTickerPriceMap] = useState(new Map([['BINANCE:BTCUSDT', 0], ['BINANCE:ETHUSDT', 0]]));
-    const [socket, setSocket] = useState();
+    const [socket] = useState(new Socket());
+    const [socketOpen, setSocketOpen] = useState(false);
 
-    useEffect(() => {
-        setSocket( new Socket('wss://ws.finnhub.io?token=<TOKEN>', Array.from(tickerPriceMap.keys()), onSocketMessageReceived))
-    }, [])
+    const url = 'wss://ws.finnhub.io?token=c035nmn48v6v2t3i3n00';
 
     const onSocketMessageReceived = (data) => {
         console.log(data);
@@ -20,12 +21,26 @@ const App = () => {
         socket.unsubscribe(symbol);
     }
 
+    const connectSocket = () => {
+        socket.connect(url, Array.from(tickerPriceMap.keys()), onSocketMessageReceived);
+        setSocketOpen(socket.isOpen());
+    }
+
+    const disconnectSocket = () => {
+        socket.disconnect();
+        setSocketOpen(socket.isOpen());
+    }
+
     return (
-      Array.from(tickerPriceMap.keys()).map(key => (
-          <div key={key}>
-              <button onClick={() => unsubscribe(key)}>Unsubscribe from: {key}</button>
-          </div>
-      ))
+        <div>
+            <UnsubscribeSelector unsubscribe={(symbol) => unsubscribe(symbol)}
+                                 symbols={Array.from(tickerPriceMap.keys())}
+            />
+            <ConnectDisconnect connect={() => connectSocket()}
+                               disconnect={() => disconnectSocket()}
+                               socketOpen={socketOpen}
+            />
+        </div>
     );
 
 }
