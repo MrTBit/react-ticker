@@ -5,9 +5,7 @@ class Socket {
     }
 
     setupSocketListeners(onSocketOpen, onMessageReceived, onSocketClose) {
-        const specialThis = this; //just javascript things
-
-        // Connection opened -> Subscribe
+        // Connection opened
         this.socket.addEventListener('open', function (event) {
             onSocketOpen();
         });
