@@ -6,8 +6,9 @@ import DataModel from "./models/DataModel";
 import SymbolViewData from "./models/SymbolViewData";
 import percentChange from "./utils/MathUtils";
 import View from "./components/View";
-import {Col, Row} from "react-bootstrap";
+import {Col, Container, Row} from "react-bootstrap";
 import _ from "lodash";
+import './App.css';
 
 const App = () => {
     const [tickerData, setTickerData] = useState([new SymbolViewData('BINANCE:BTCUSDT', -1), new SymbolViewData('BINANCE:ETHUSDT', -1)]);
@@ -35,7 +36,7 @@ const App = () => {
             prevState.forEach((symbolViewData, index) => {
                 const latestApiData = dataModels.find(dataModel => dataModel.symbol === symbolViewData.symbol);
                 if (latestApiData) {
-                    tickerDataToUpdate[index] = new SymbolViewData(symbolViewData.symbol, latestApiData.price, percentChange(symbolViewData.price, latestApiData.price));
+                    tickerDataToUpdate[index] = new SymbolViewData(symbolViewData.symbol, latestApiData.price, percentChange(symbolViewData.price, latestApiData.price), symbolViewData.name);
                 }
             });
 
@@ -55,32 +56,45 @@ const App = () => {
     }
 
     const unsubscribe = (symbol) => {
-        let tickerDataToUpdate = [...tickerData];
+        let tickerDataToUpdate = _.clone(tickerData);
         tickerDataToUpdate = tickerDataToUpdate.filter(symbolViewData => symbolViewData.symbol !== symbol);
         setTickerData(tickerDataToUpdate);
         socket.unsubscribe(symbol);
     }
 
-    console.log(tickerData);
+    const changeSymbolViewDataName = (symbolViewDataToUpdate, newName) => {
+
+
+        setTickerData(prevState => {
+            let tickerDataToUpdate = _.cloneDeep(prevState);
+            tickerDataToUpdate[tickerDataToUpdate.findIndex(symbolViewData => symbolViewData.symbol === symbolViewDataToUpdate.symbol)].name = newName;
+            return tickerDataToUpdate;
+        });
+
+    }
 
     return (
-        <div>
-            <Col>
-                <Row>
-                    <UnsubscribeSelector unsubscribe={(symbol) => unsubscribe(symbol)}
-                                         symbols={tickerData.map(symbolViewData => symbolViewData.symbol)}
-                    />
-                    <ConnectDisconnect
-                        connect={() => socket.connect(url, onSocketOpened, onSocketMessageReceived, onSocketClosed)}
-                        disconnect={() => socket.disconnect()}
-                        socketOpen={socketOpen}
+            <Container fluid className={'height100 background-color'}>
+                <Row className={'toolbar-height'}>
+                    <Col>
+                        <UnsubscribeSelector unsubscribe={(symbol) => unsubscribe(symbol)}
+                                             symbols={tickerData.map(symbolViewData => symbolViewData.symbol)}
+                        />
+                    </Col>
+                    <Col>
+                        <ConnectDisconnect
+                            connect={() => socket.connect(url, onSocketOpened, onSocketMessageReceived, onSocketClosed)}
+                            disconnect={() => socket.disconnect()}
+                            socketOpen={socketOpen}
+                        />
+                    </Col>
+                </Row>
+                <Row className={'view-height'}>
+                    <View viewDataObjects={tickerData}
+                          changeSymbolViewDataName={changeSymbolViewDataName}
                     />
                 </Row>
-                <Row>
-                    <View viewDataObjects={tickerData}/>
-                </Row>
-            </Col>
-        </div>
+            </Container>
     );
 
 }

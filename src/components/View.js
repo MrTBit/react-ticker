@@ -1,32 +1,12 @@
-import React, {useState} from "react";
-import SingleView from "./SingleView";
+import React from "react";
+import CarouselView from "./CarouselView";
 
-const View = ({viewDataObjects}) => {
-    const [selectedSymbolIndex, setSelectedSymbolIndex] = useState(0);
-
-    const selectNextSymbol = () => {
-        if (selectedSymbolIndex === viewDataObjects.length -1) {
-            setSelectedSymbolIndex(0);
-        } else {
-            setSelectedSymbolIndex(selectedSymbolIndex + 1);
-        }
-    }
-
-    const selectPreviousSymbol = () => {
-        if (selectedSymbolIndex === 0) {
-            setSelectedSymbolIndex(viewDataObjects.length - 1);
-        } else {
-            setSelectedSymbolIndex(selectedSymbolIndex-1);
-        }
-    }
+const View = ({viewDataObjects, changeSymbolViewDataName}) => {
 
     return (
-        <div>
-            <SingleView selectedSymbol={viewDataObjects[selectedSymbolIndex]}
-                        selectNext={() => selectNextSymbol()}
-                        selectPrevious={() => selectPreviousSymbol()}
-            />
-        </div>
+        <CarouselView items={viewDataObjects}
+                      changeItemName={changeSymbolViewDataName}
+        />
     )
 }
 

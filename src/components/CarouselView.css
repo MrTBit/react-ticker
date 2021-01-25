@@ -1,0 +1,35 @@
+.carousel-expand {
+    height: 100%;
+    width: 100%;
+}
+
+.carousel-title {
+    text-align: center;
+    margin-top: 14%;
+    font-size: 8vh;
+}
+
+.carousel-caption {
+    font-size: 5vh;
+    position: unset;
+    margin-top: 8%;
+}
+
+.title-input {
+    color: #a7a7a7;
+    background: #333333;
+    border: unset;
+    text-align: center;
+}
+
+.color-up {
+    color: green;
+}
+
+.color-down {
+    color: darkred;
+}
+
+.color-neutral {
+    color: beige;
+}
