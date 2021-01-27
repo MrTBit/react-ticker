@@ -1,7 +1,6 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import Socket from "./services/Socket";
 import UnsubscribeSelector from "./components/UnsubscribeSelector";
-import ConnectDisconnect from "./components/ConnectDisconnect";
 import DataModel from "./models/DataModel";
 import SymbolViewData from "./models/SymbolViewData";
 import percentChange from "./utils/MathUtils";
@@ -9,13 +8,20 @@ import View from "./components/View";
 import {Col, Container, Row} from "react-bootstrap";
 import _ from "lodash";
 import './App.css';
+import getAllSymbols from "./services/FetchSymbols";
+import AppBar from "./components/AppBar";
 
 const App = () => {
     const [tickerData, setTickerData] = useState([new SymbolViewData('BINANCE:BTCUSDT', -1), new SymbolViewData('BINANCE:ETHUSDT', -1)]);
     const [socket] = useState(new Socket());
-    const [socketOpen, setSocketOpen] = useState(false);
+    const [searchModels, setSearchModels] = useState([]);
 
     const url = 'wss://ws.finnhub.io?token=' + process.env.REACT_APP_API_KEY;
+
+    useEffect(() => {
+        getAllSymbols().then(models => setSearchModels(models));
+        socket.connect(url, onSocketOpened, onSocketMessageReceived, () => null);
+    }, [])
 
     const onSocketMessageReceived = (data) => {
 
@@ -44,15 +50,22 @@ const App = () => {
         });
     }
 
-    const onSocketClosed = () => setSocketOpen(false);
-
     const onSocketOpened = () => {
 
         tickerData.forEach(symbolViewData => {
             socket.subscribe(symbolViewData.symbol);
         });
 
-        setSocketOpen(true);
+    }
+
+    const subscribe = (symbol) => {
+        const tickerDataToUpdate = _.cloneDeep(tickerData);
+
+        tickerDataToUpdate.push(new SymbolViewData(symbol, -1));
+
+        setTickerData(tickerDataToUpdate);
+
+        socket.subscribe(symbol);
     }
 
     const unsubscribe = (symbol) => {
@@ -63,7 +76,6 @@ const App = () => {
     }
 
     const changeSymbolViewDataName = (symbolViewDataToUpdate, newName) => {
-
 
         setTickerData(prevState => {
             let tickerDataToUpdate = _.cloneDeep(prevState);
@@ -82,10 +94,9 @@ const App = () => {
                         />
                     </Col>
                     <Col>
-                        <ConnectDisconnect
-                            connect={() => socket.connect(url, onSocketOpened, onSocketMessageReceived, onSocketClosed)}
-                            disconnect={() => socket.disconnect()}
-                            socketOpen={socketOpen}
+                        <AppBar
+                            symbols={searchModels}
+                            selectSymbol={subscribe}
                         />
                     </Col>
                 </Row>
