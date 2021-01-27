@@ -10,7 +10,9 @@ const AppBar = ({symbols, selectSymbol}) => {
 
     const onSymbolSelected = (selection) => {
         setSelected(selection);
-        selectSymbol(selection[0].symbol);
+        if (selection[0]) {
+            selectSymbol(selection[0].symbol);
+        }
     }
 
     return (

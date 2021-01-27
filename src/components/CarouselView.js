@@ -41,7 +41,7 @@ const CarouselView = ({items, changeItemName}) => {
                                 <Col>
                                     <input ref={ref}
                                            className={'title-input'}
-                                           size={itemNameToShow(item).length - 1}
+                                           size={itemNameToShow(item).length}
                                            defaultValue={itemNameToShow(item)}
                                            onFocus={inputFocus}
                                            onKeyDown={(event) => inputKeyDown(item, event)}
