@@ -12,7 +12,7 @@ import getAllSymbols from "./services/FetchSymbols";
 import AppBar from "./components/AppBar";
 
 const App = () => {
-    const [tickerData, setTickerData] = useState([new SymbolViewData('BINANCE:BTCUSDT', -1), new SymbolViewData('BINANCE:ETHUSDT', -1)]);
+    const [tickerData, setTickerData] = useState([new SymbolViewData('BINANCE:ETHUSDT', -1)]);
     const [socket] = useState(new Socket());
     const [searchModels, setSearchModels] = useState([]);
 
@@ -89,11 +89,6 @@ const App = () => {
             <Container fluid className={'height100 background-color'}>
                 <Row className={'toolbar-height'}>
                     <Col>
-                        <UnsubscribeSelector unsubscribe={(symbol) => unsubscribe(symbol)}
-                                             symbols={tickerData.map(symbolViewData => symbolViewData.symbol)}
-                        />
-                    </Col>
-                    <Col>
                         <AppBar
                             symbols={searchModels}
                             selectSymbol={subscribe}
@@ -103,11 +98,11 @@ const App = () => {
                 <Row className={'view-height'}>
                     <View viewDataObjects={tickerData}
                           changeSymbolViewDataName={changeSymbolViewDataName}
+                          removeItem={unsubscribe}
                     />
                 </Row>
             </Container>
     );
-
 }
 
 export default App;

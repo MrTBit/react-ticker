@@ -1,11 +1,12 @@
 import React from "react";
 import CarouselView from "./CarouselView";
 
-const View = ({viewDataObjects, changeSymbolViewDataName}) => {
+const View = ({viewDataObjects, changeSymbolViewDataName, removeItem}) => {
 
     return (
         <CarouselView items={viewDataObjects}
                       changeItemName={changeSymbolViewDataName}
+                      removeItem={removeItem}
         />
     )
 }

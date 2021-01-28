@@ -1,9 +1,12 @@
-import React from "react";
-import {Carousel, Col, Row} from "react-bootstrap";
+import React, { useState } from "react";
+import {Carousel, Col, Row, Button} from "react-bootstrap";
 import './CarouselView.css';
-import '../App.css'
+import '../App.css';
+import {MdClear} from 'react-icons/md';
 
-const CarouselView = ({items, changeItemName}) => {
+const CarouselView = ({items, changeItemName, removeItem}) => {
+
+    const [clearIconState, setClearIconState] = useState(false);
 
     const priceColorClass = (percentChange) => {
         if (percentChange > 0) {
@@ -27,20 +30,22 @@ const CarouselView = ({items, changeItemName}) => {
             event.target.blur();
             changeItemName(item, event.target.value);
         }
-
     }
-
 
     return (
         <Carousel className={'carousel-expand'}>
             {
                 items.map(item => {
-                    const ref = React.createRef();
-                    return (<Carousel.Item key={item.symbol}>
+                    return (
+                        <Carousel.Item key={item.symbol} onMouseEnter={() => setClearIconState(true)} onMouseLeave={() => setClearIconState(false)}>
+                            <Row className={clearIconState ? 'clear-active-item-show' : 'clear-active-item-hide'}>
+                                <Button type={null} className={'opaque-button'} onClick={() => removeItem(item.symbol)}>
+                                    <MdClear/>
+                                </Button>
+                            </Row>
                             <Row className={'carousel-title'}>
                                 <Col>
-                                    <input ref={ref}
-                                           className={'title-input'}
+                                    <input className={'title-input'}
                                            size={itemNameToShow(item).length}
                                            defaultValue={itemNameToShow(item)}
                                            onFocus={inputFocus}
