@@ -33,3 +33,33 @@
 .color-neutral {
     color: beige;
 }
+
+.clear-active-item-hide {
+    visibility: hidden;
+    font-size: 3em;
+    color: white;
+    justify-content: end;
+    margin-right: 15%;
+}
+
+.clear-active-item-show{
+    visibility: visible;
+    font-size: 3em;
+    color: white;
+    justify-content: end;
+    margin-right: 15%;
+}
+
+.opaque-button {
+    margin-top: 5px;
+    background-color: #333333;
+    border-color: #333333;
+    font-size: 2rem;
+}
+
+.opaque-button:hover {
+    background-color: #333333;
+    border-color: #555555;
+    font-size: 2rem;
+    margin-top: 5px;
+}
