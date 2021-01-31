@@ -1,11 +1,10 @@
 import React, {useState, useEffect} from "react";
 import Socket from "./services/Socket";
-import UnsubscribeSelector from "./components/UnsubscribeSelector";
 import DataModel from "./models/DataModel";
 import SymbolViewData from "./models/SymbolViewData";
 import percentChange from "./utils/MathUtils";
 import View from "./components/View";
-import {Col, Container, Row} from "react-bootstrap";
+import {Container, Row} from "react-bootstrap";
 import _ from "lodash";
 import './App.css';
 import getAllSymbols from "./services/FetchSymbols";
@@ -88,12 +87,10 @@ const App = () => {
     return (
             <Container fluid className={'height100 background-color'}>
                 <Row className={'toolbar-height'}>
-                    <Col>
-                        <AppBar
-                            symbols={searchModels}
-                            selectSymbol={subscribe}
-                        />
-                    </Col>
+                    <AppBar
+                        symbols={searchModels}
+                        selectSymbol={subscribe}
+                    />
                 </Row>
                 <Row className={'view-height'}>
                     <View viewDataObjects={tickerData}

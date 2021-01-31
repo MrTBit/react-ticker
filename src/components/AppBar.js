@@ -1,12 +1,24 @@
-import React, {useState} from "react";
-import {Typeahead} from "react-bootstrap-typeahead";
-import {Col, Row} from "react-bootstrap";
+import React, {useEffect, useState} from "react";
+import {AsyncTypeahead} from "react-bootstrap-typeahead";
+import {Col} from "react-bootstrap";
+import './AppBar.scss';
 
 const AppBar = ({symbols, selectSymbol}) => {
 
     const [selected, setSelected] = useState([]);
+    const [filteredOptions, setFilteredOptions] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [isDisabled, setIsDisabled] = useState(false);
 
-    const filterByFields = ['name', 'symbol'];
+    useEffect(() => {
+        if (!symbols.length) {
+            setIsDisabled(true);
+            setIsLoading(true);
+        } else if (isDisabled) {
+            setIsDisabled(false);
+            setIsLoading(false);
+        }
+    }, [symbols, isDisabled])
 
     const onSymbolSelected = (selection) => {
         setSelected(selection);
@@ -15,15 +27,34 @@ const AppBar = ({symbols, selectSymbol}) => {
         }
     }
 
+    const handleSearch = (query) => {
+        if (!symbols.isEmpty) {
+            setIsLoading(true);
+
+            setFilteredOptions(symbols.filter(symbolModel =>
+                (symbolModel.symbol.toLowerCase().includes(query.toLowerCase())) ||
+                (symbolModel.name.toLowerCase().includes(query.toLowerCase()))
+            ));
+
+            setIsLoading(false);
+        }
+    }
+
     return (
-        <Row>
-            <Col>
-                <Typeahead
+        <Col>
+                <AsyncTypeahead
+                    className={'flex'}
                     id="symbol-search-box"
                     labelKey="name"
-                    filterBy={filterByFields}
-                    options={symbols}
+                    filterBy={() => true}
+                    options={filteredOptions}
                     placeholder={'Search for symbol...'}
+                    minLength={1}
+                    onSearch={handleSearch}
+                    isLoading={isLoading}
+                    onChange={(selection) => onSymbolSelected(selection)}
+                    selected={selected}
+                    disabled={isDisabled}
                     renderMenuItemChildren={(option) => (
                         <div>
                             {option.name}
@@ -32,11 +63,8 @@ const AppBar = ({symbols, selectSymbol}) => {
                             </div>
                         </div>
                     )}
-                    onChange={(selection) => onSymbolSelected(selection)}
-                    selected={selected}
                 />
-            </Col>
-        </Row>
+        </Col>
     );
 }
 
