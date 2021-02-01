@@ -7,7 +7,7 @@ import View from "./components/View";
 import {Container, Row} from "react-bootstrap";
 import _ from "lodash";
 import './App.css';
-import getAllSymbols from "./services/FetchSymbols";
+import {getAllSymbols, getLatestPrice} from "./services/FetchSymbols";
 import AppBar from "./components/AppBar";
 
 const App = () => {
@@ -57,11 +57,15 @@ const App = () => {
 
     }
 
-    const subscribe = (symbol) => {
+    const subscribe = async (symbol) => {
         const tickerDataToUpdate = _.cloneDeep(tickerData);
+        let initialPrice = -1;
 
-        tickerDataToUpdate.push(new SymbolViewData(symbol, -1));
+        if (!symbol.includes(':')) { //if there's a ':' then it's crypto and the price doesn't need to be fetched
+            initialPrice = await getLatestPrice(symbol);
+        }
 
+        tickerDataToUpdate.push(new SymbolViewData(symbol, initialPrice));
         setTickerData(tickerDataToUpdate);
 
         socket.subscribe(symbol);

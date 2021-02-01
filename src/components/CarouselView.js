@@ -54,7 +54,7 @@ const CarouselView = ({items, changeItemName, removeItem}) => {
                                 </Col>
                             </Row>
                             <Carousel.Caption className={'carousel-caption ' + priceColorClass(item.percentChange)}>
-                                ${item.price.toFixed(2)}
+                                {typeof item.price === 'number' && item.price !== -1 ? '$' + item.price.toFixed(2) : 'Loading...'}
                             </Carousel.Caption>
                         </Carousel.Item>
                     )
